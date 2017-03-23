@@ -1,4 +1,4 @@
-const {readFile} = require(`fs`)
+const {createReadStream, readFile} = require(`fs`)
 const {createServer} = require(`http`)
 const server = createServer()
 
@@ -9,9 +9,15 @@ server.on(`request`, ({url, method, headers}, res) => {
     console.error(err.stack);
   });
 
-  // respond with html file
-  readFile(`index.html`, (err, buff) => {
-    res.end(buff)
+  const readStream = createReadStream('index.html')
+
+  readStream
+  .on('error', (err) => {
+    res.end(error)
+  })
+
+  .on('open', () => {
+    readStream.pipe(res)
   })
 })
 
